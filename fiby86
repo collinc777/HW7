@@ -1,0 +1,108 @@
+(! fib-code
+	'(fib_setup
+	  main
+	  (irmovl  stack_top %esp)
+      (irmovl  stack_top %ebp)
+      (irmovl  31   %edx)    ; %edx <- 31   -- This is < x >.
+      (pushl   %edx)
+      (call    fib2)
+      (halt)
+
+      fib_rec
+      (pushl  %ebx)
+	  (mrmovl  16(%esp)  %edx)
+	  (mrmovl  8(%esp)  %ecx)
+	  (mrmovl  12(%esp)  %ebx)
+	  (andl  %edx  %edx)
+	  (movl  %ecx  %eax)
+	  (jne  .L7)
+      (jmp  .L3)
+
+      .L6
+	  (rrmovl  %ecx  %ebx)
+	  (rrmovl  %eax  %ecx)
+
+	  .L7
+	  (subl  $1  %edx)
+	  (pushl  %ebx)
+	  (addl  %ecx, %ebx)
+	  (addl  %ebx, %eax)
+	  (popl  $ebx)
+	  (jne  .L6)
+
+
+
+
+
+
+fib_rec:
+.LFB1:
+	pushl	%ebx
+	mrmovl	16(%esp)  %edx
+	mrmovl	8(%esp)  %ecx
+	mrmovl	12(%esp)  %ebx
+	andl	%edx  %edx
+	movl	%ecx  %eax	
+	jne	.L7
+	jmp	.L3
+
+.L6
+	rrmovl	%ecx  %ebx
+	rrmovl	%eax  %ecx	
+
+.L7
+	subl	$1  %edx
+	pushl	%ebx
+	addl	%ecx, %ebx
+	addl	%ebx, %eax
+	popl	$ebx
+	jne	.L6
+
+.L3
+
+	popl %ebx
+	ret
+
+.LFE1 //need to do stuff with the crap below. 
+	size	fib_rec  .-fib_rec
+	.p2align 4  15
+	.globl	fib2
+	.type	fib2  @function
+
+fib2:
+.LFB2:
+	irmovl	$12  %eax
+	subl	%eax  %esp
+	mrmovl	16(%esp)  %eax
+	andl	%eax  %eax
+	jge .L11
+	xorl 	%eax  %eax
+	irmovl	$12  %edx
+	addl 	edx  %esp
+	ret
+
+.L11
+	pushl 	%eax
+	irmovl	$1  %edx
+	subl	%edx  %eax
+	jle	 .L10
+	popl	%eax
+	subl	%edx  %eax
+	rmmovl	%eax  8(%esp)
+	xorl	%edx  %edx
+	rmmovl	%edx  4(%esp)
+	irmovl	$1  %edx
+	rmmovl	%edx  (esp)
+	call	fib_rec
+
+.L10
+	irmovl	$12  %edx
+	addl	%edx  %esp
+.LFE2:
+	.size	fib2  .-fib2
+	.ident	"GCC: (Ubuntu/Linaro 4.6.3-1ubuntu5) 4.6.3"
+	.section	.note.GNU-stack "" @progbits
+
+
+
+
