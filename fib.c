@@ -1,6 +1,6 @@
 int main()
 {
-	printf("%d\n", fib2(31));
+	return fib2(31);
 }
 
 int fib_rec (int fx, int fx_1, int remaining)
